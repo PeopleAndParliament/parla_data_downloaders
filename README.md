@@ -2,6 +2,8 @@
 
 Downloaders for various parliamentary datasets.
 
+Python 3.8.10, libraries in `/requirements.txt`
+
 ## Ireland
 
 main_ireland.py

@@ -2,6 +2,7 @@ import sys
 from time import sleep
 from bs4 import BeautifulSoup
 import requests
+from tqdm import tqdm
 
 
 def get_file_urls(root_url):
@@ -17,7 +18,7 @@ def get_file_urls(root_url):
 
 
 def scrape_files(file_urls, savepath):
-    for file_url in file_urls:
+    for file_url in tqdm(file_urls):
         retries = 0
         max_retries = 10
         while retries < max_retries:
@@ -48,5 +49,7 @@ members_outpath = "data/work/uk/theyworkforyou/members/"
 debates_urls = get_file_urls(debates_url)
 members_urls = get_file_urls(members_url)
 
+print("Downloading content from " + debates_url)
 scrape_files(debates_urls, debates_outpath)
+print("Downloading content from " + members_url)
 scrape_files(members_urls, members_outpath)
