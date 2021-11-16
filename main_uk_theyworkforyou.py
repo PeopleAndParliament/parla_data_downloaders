@@ -7,7 +7,7 @@ from glob import glob
 
 
 def get_file_urls(root_url):
-    resp = requests.get(debates_url)
+    resp = requests.get(root_url)
     bsoup = BeautifulSoup(resp.text, 'html.parser')
     links = bsoup.find_all('a')
     link_urls = []
