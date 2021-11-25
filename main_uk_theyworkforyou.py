@@ -55,18 +55,22 @@ def scrape_files(file_urls, savepath, skip_downloaded=True):
                 break
 
 
-debates_url = "https://www.theyworkforyou.com/pwdata/scrapedxml/debates/"
-members_url = "https://www.theyworkforyou.com/pwdata/scrapedxml/regmem/"
+commons_url = "https://www.theyworkforyou.com/pwdata/scrapedxml/debates/"
+commons_wmhall_url = "https://www.theyworkforyou.com/pwdata/scrapedxml/westminhall/"
+lords_url = "https://www.theyworkforyou.com/pwdata/scrapedxml/lordspages/"
 
-# debates_outpath = "data/work/uk/theyworkforyou/debates/"
-debates_outpath = "/media/vvaara/My Passport/worktemp/uk_debates/"
-# members_outpath = "data/work/uk/theyworkforyou/members/"
-members_outpath = "/media/vvaara/My Passport/worktemp/uk_members/"
+commons_outpath = "../data/raw/uk/theyworkforyou/commons_debates/"
+wmhall_outpath = "../data/raw/uk/theyworkforyou/commons_wmhall/"
+lords_outpath = "../data/raw/uk/theyworkforyou/lords_debates/"
 
-debates_urls = get_file_urls(debates_url)
-members_urls = get_file_urls(members_url)
 
-print("Downloading content from " + debates_url)
-scrape_files(debates_urls, debates_outpath)
-print("Downloading content from " + members_url)
-scrape_files(members_urls, members_outpath)
+commons_urls = get_file_urls(commons_url)
+wmhall_urls = get_file_urls(commons_wmhall_url)
+lords_urls = get_file_urls(lords_url)
+
+print("Downloading content from " + commons_url)
+scrape_files(commons_urls, commons_outpath)
+print("Downloading content from " + lords_url)
+scrape_files(lords_urls, lords_outpath)
+print("Downloading content from " + commons_wmhall_url)
+scrape_files(wmhall_urls, wmhall_outpath)
