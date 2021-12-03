@@ -1,3 +1,4 @@
 data/work
 .idea
 venv
+__pycache__
