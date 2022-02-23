@@ -35,7 +35,7 @@ def download_url(url, savepath, error_log, success_log):
             f.write(url + "\n")
 
 
-metadata_csv = 'data/work/germany/to_scrape.csv'
+metadata_csv = 'data/work/germany/reichstag_pages.csv'
 savepath = 'data/work/germany/ocr/'
 errorlog = 'data/work/germany/ocr_download_errors.log'
 successlog = 'data/work/germany/ocr_download_completed.log'

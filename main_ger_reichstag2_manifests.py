@@ -180,7 +180,7 @@ for item in all_items:
             })
 
 
-outfile = 'data/work/germany/to_scrape.csv'
+outfile = 'data/work/germany/reichstag_pages.csv'
 with open(outfile, 'w') as csvfile:
     fieldnames = list(final_out[0].keys())
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
