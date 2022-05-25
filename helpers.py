@@ -1,7 +1,19 @@
 from tqdm import tqdm
 import requests
 import sys
-from time import sleep
+import time
+import random
+from urllib3.util.retry import Retry
+from requests.adapters import HTTPAdapter
+from os.path import exists
+
+
+def read_success_log(success_log):
+    if not exists(success_log):
+        return []
+    with open(success_log, 'r') as f:
+        succeeded = [line.rstrip() for line in f]
+    return succeeded
 
 
 def download_urls(urls_to_download, savepath):
@@ -25,3 +37,23 @@ def download_urls(urls_to_download, savepath):
                 continue
             else:
                 break
+
+
+def download_url(url, savepath, savename, error_log, success_log, sleep=False):
+    saveloc = savepath + '/' + savename
+    if sleep:
+        time.sleep(random.randint(0, 2))
+    s = requests.Session()
+    retries = Retry(total=5,
+                    backoff_factor=1,
+                    status_forcelist=[500, 502, 503, 504])
+    s.mount('https://', HTTPAdapter(max_retries=retries))
+    resp = s.get(url)
+    if resp.status_code == 200:
+        with open(saveloc, 'wb') as f:
+            f.write(resp.content)
+        with open(success_log, 'a') as f:
+            f.write(url + "\n")
+    else:
+        with open(error_log, 'a') as f:
+            f.write(url + "\n")

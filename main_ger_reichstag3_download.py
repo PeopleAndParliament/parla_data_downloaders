@@ -11,7 +11,7 @@ from requests.adapters import HTTPAdapter
 
 def read_success_log(success_log):
     with open(success_log, 'r') as f:
-        succeeded = lines = [line.rstrip() for line in f]
+        succeeded = [line.rstrip() for line in f]
     return succeeded
 
 
