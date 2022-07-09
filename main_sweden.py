@@ -54,3 +54,6 @@ if __name__ == '__main__':
     print("Downloading data from data.riksdagen.se ...")
     for item in tqdm(datafiles_riksdagen):
         download_file(item, 'data/final/sweden/riksdagen_se/')
+
+    print("Downloading data from https://github.com/welfare-state-analytics/riksdagen-corpus ...")
+    download_file("https://github.com/welfare-state-analytics/riksdagen-corpus/releases/download/v0.4.5/corpus-0.4.5.zip", 'data/final/sweden/riksdagen-corpus/')

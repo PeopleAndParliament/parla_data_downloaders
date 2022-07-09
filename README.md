@@ -33,3 +33,19 @@ from the MDZ API, and collects relevant information (ocr and img url, more metad
 for scraping to _data/work/germany/reichstag_pages.csv_ from the manifests.
 * **main_ger_reichstag3_download.py** downloads the OCR pages (~18000),
 logging the progress. Some basic error handling is included.
+
+## France
+
+### 5th Republic
+
+This is in two parts, the old stuff and the modern/contemporary material.
+The formats and storage methods change, so that's why.
+
+#### More recent 5th Republic
+
+* **main_france_modern1_urls_and_meta.py** - Gathers urls and metadata for both National assembly and the Senata and save those as csvs.
+* **main_france_modern2_download.py** - Downloads the pdf and html urls listed in the csvs made by the above script.
+
+#### Rest of the 5th Republic
+
+Documentation TBD

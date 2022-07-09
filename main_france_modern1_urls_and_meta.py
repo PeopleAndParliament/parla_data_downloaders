@@ -48,7 +48,7 @@ def get_an_session_links(an_urls):
                 for ul in h1.parent.findChildren('ul', class_="tabs-content"):
                     for a in ul.findChildren('a'):
                         link = root_path + a['href']
-                        if "/cri/" in link:
+                        if "/cri/" in link and link not in links:
                             links.append(link)
         all_links.extend(links)
     return all_links
@@ -239,15 +239,17 @@ def get_an15_seances_page_session_links(an15_seances_page):
     return res
 
 
+# gets the url for each month. These in turn hold the individual dates
 def get_senate_urls(root_url, start_year, end_year):
     resp = requests.get(root_url)
-    bsoup = BeautifulSoup(resp.text, 'html.parser')
+    bsoup = BeautifulSoup(resp.text.replace('\n', ' '), 'html.parser')
     seances_headers = ["Séances de " + str(x) for x in range(start_year, end_year + 1)]
     root_path = "/".join(root_url.split("/")[:-1]) + "/"
-    links = []
+    links = dict()
     for seances_header in seances_headers:
         seances = bsoup.find("h3", string=seances_header).parent.findChildren("a")
-        links.extend([root_path + x['href'] for x in seances])
+        links[int(seances_header.split()[-1])] = [root_path + x['href'] for x in seances]
+        # links.extend()
     return links
 
 
@@ -278,24 +280,49 @@ def get_senate_month_urls2(root_url):
     bsoup = BeautifulSoup(resp.text, 'html.parser')
     container_box = bsoup.find("div", class_="box-inner gradient-01")
     container_list = container_box.find('ul')
-    for li in container_list.find_all('li', recursive=False):
-        date = li.find('a', recursive=False).text.strip()
-        print(date)
-        html_link = li.find('ul', recursive=False).find('a', href=re.compile("_mono\.html"))
-        print(root_path + html_link['href'])
-        pdf_link = li.find('ul', recursive=False).find('a', href=re.compile("\.pdf"))
-        print(root_path + pdf_link['href'])
-
-    #
-    for link in links:
-        date = link.split('/s')[-1].split('_mono')[0]
-        date = date[0:4] + '-' + date[4:6] + '-' + date[6:]
-        ret.append({
-            'html': link,
-            'pdf': '',
+    retdata = list()
+    for seance_date in container_list.find_all('li', recursive=False):
+        date = seance_date.find('a', recursive=False).text.strip()
+        date = fr_datestring_to_date(date.split('(')[0].strip())
+        html_link = seance_date.find('ul', recursive=False).find('a', href=re.compile("_mono\.html"))
+        html_link = root_path + html_link['href']
+        pdf_link = seance_date.find('ul', recursive=False).find('a', href=re.compile("\.pdf"))
+        if pdf_link is None:
+            pdf_link = ''
+        else:
+            pdf_link = root_path.split('/seances')[0] + pdf_link['href']
+        retdata.append({
+            'html': html_link,
+            'pdf': pdf_link,
             'date': date,
             'era': '5th_republic'})
-    return ret
+    return retdata
+
+
+def get_seance_numeric(seance_text):
+    seances = {
+        'Deuxième séance': 2,
+        'Cinquième séance': 5,
+        'Quatrième séance': 4,
+        'Première séance': 1,
+        'Troisième séance': 3,
+        'Séance unique': 0,
+        '3e séance': 3,
+        '3ème séance': 3,
+        '2e séance': 2,
+        '2ème séance': 2,
+        'séance': 0,
+        'sDeuxième séance': 2,
+        '1re séance': 1,
+        '1e séance': 1,
+        '1er séance': 1,
+        '1ère séance': 1,
+        'Séance': 0,
+    }
+    if seance_text in seances.keys():
+        return seances[seance_text]
+    else:
+        return None
 
 
 # no pdf - up to AVRIL 4/2005
@@ -307,16 +334,21 @@ def get_senate_month_urls2(root_url):
 # -------------------------------------
 # Quite straightforward, mostly consistent format.
 
-# savepath = "data/work/france/scraped/senate/"
-
 senate_site = "http://www.senat.fr/seances/seances.html"
-senate_urls = get_senate_urls(senate_site, 1996, 2002)
-all_month_urls = []
-for url in tqdm(senate_urls):
-    all_month_urls.extend(get_senate_month_urls(url))
-#     date, html, pdf, era
+senate_urls = get_senate_urls(senate_site, 1996, 2022)
 
-# download_urls(all_month_urls, savepath)
+all_month_urls = []
+for year in tqdm(senate_urls.keys()):
+    for month_url in senate_urls[year]:
+        if year < 2003:
+            all_month_urls.extend(get_senate_month_urls(month_url))
+        else:
+            all_month_urls.extend(get_senate_month_urls2(month_url))
+
+senat_urls = pd.DataFrame(all_month_urls)
+senat_urls.to_csv(
+    'data/work/france/5th_rep/senat_1996-2022_metadata_urls.csv', index=False)
+
 
 
 # -------------------------------------
@@ -370,21 +402,3 @@ all_sitting_urls.extend(an15_seances_urls)
 an_urls_and_meta = pd.DataFrame(all_sitting_urls)
 an_urls_and_meta.to_csv(
     'data/work/france/5th_rep/an12-15_metadata_urls.csv', index=False)
-
-
-# todo:
-# - senate: get url for pdf, html
-# - download pdfs
-#   - for dates with no pdf, create pdf-simulation from the html text
-# - download html
-# - add names for savefiles (or just use the names in pdf and html, they seem to be unique?)
-
-# done:
-# - save html-pdf-date-seance -metadata (add parliament number to that)
-
-# an pdf
-# available with similar paths to html files for legislature 12-14
-# also 15.: https://www.assemblee-nationale.fr/15/debats/index.asp
-
-# senat pdf
-# missing for years between 1996 and 2005

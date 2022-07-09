@@ -30,7 +30,7 @@ def download_urls(urls_to_download, savepath):
                 print("  !> Request probably timed out or something." +
                       " Retrying in 2 secs. Retries: " + str(retries) + "/" +
                       str(max_retries))
-                sleep(2)
+                time.sleep(2)
                 retries += 1
                 if retries == max_retries:
                     sys.exit("  !!> Max retries reached for request.")
