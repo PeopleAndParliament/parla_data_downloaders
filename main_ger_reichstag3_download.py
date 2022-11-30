@@ -36,7 +36,7 @@ def download_url(url, savepath, error_log, success_log):
 
 
 metadata_csv = 'data/work/germany/reichstag_pages.csv'
-savepath = 'data/work/germany/ocr/'
+savepath = '/media/vvaara/My Passport/pr-temp/germany/ocr/'
 errorlog = 'data/work/germany/ocr_download_errors.log'
 successlog = 'data/work/germany/ocr_download_completed.log'
 completed_downloads = set(read_success_log(successlog))

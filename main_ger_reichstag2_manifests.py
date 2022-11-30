@@ -97,9 +97,13 @@ def get_final_structures(structures, canvases):
             'first_canvas_i': first_canvas_i})
     # set last canvas i (end of range for canvases (=pages) for each subsection)
     for i in range(1, len(final_structures)):
+        # for last structure, set last canvas to last item in canvases
         if i == len(final_structures) - 1:
             final_structures[i]['last_canvas_i'] = max(canvases.keys())
+        # for each structure, (except last one) set last page to the previous page to the next structure
         final_structures[i - 1]['last_canvas_i'] = final_structures[i]['first_canvas_i'] - 1
+    if len(final_structures) == 1:
+        final_structures[0]['last_canvas'] = max(canvases.keys())
     final_sitzung_structures = list()
     # filter out non-sitzungs, add canvases to structures
     for structure in final_structures:
@@ -126,20 +130,22 @@ with open("data/work/germany/reichstag_data.json", 'r') as jsonfile:
 
 all_items = []
 for this_id in ids:
-    item_id = this_id['items'][0]['id']
-    print(item_id)
-    manifest = get_manifest_for_id(item_id)
-    label = manifest['label']
-    manifest_url = manifest['@id']
-    canvases = get_canvases(manifest['sequences'])
-    structures = get_sitzung_range(manifest['structures'])
-    final_structures = get_final_structures(structures, canvases)
-    item_data = {
-        'id': item_id,
-        'manifest_url': manifest_url,
-        'content': final_structures
-    }
-    all_items.append(item_data)
+    for item in this_id['items']:
+        item_id = item['id']
+        print(item_id)
+        manifest = get_manifest_for_id(item_id)
+        label = manifest['label']
+        manifest_url = manifest['@id']
+        canvases = get_canvases(manifest['sequences'])
+        # this was probably leftover ... VVV
+        # structures = get_sitzung_range(manifest['structures'])
+        final_structures = get_final_structures(manifest['structures'], canvases)
+        item_data = {
+            'id': item_id,
+            'manifest_url': manifest_url,
+            'content': final_structures
+        }
+        all_items.append(item_data)
 
 # Create a flat table from above. columns:
 # book_id, manifest_url, sitzung_label, sitzung_date, sitzung_order,
