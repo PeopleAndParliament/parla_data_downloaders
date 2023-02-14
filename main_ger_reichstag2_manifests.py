@@ -139,7 +139,12 @@ for this_id in ids:
         canvases = get_canvases(manifest['sequences'])
         # this was probably leftover ... VVV
         # structures = get_sitzung_range(manifest['structures'])
-        final_structures = get_final_structures(manifest['structures'], canvases)
+        # bsb00002852 does not have 'structures' in keys.
+        if 'structures' not in manifest.keys():
+            final_structures = []
+            print(item_id + " - no structures!")
+        else:
+            final_structures = get_final_structures(manifest['structures'], canvases)
         item_data = {
             'id': item_id,
             'manifest_url': manifest_url,
